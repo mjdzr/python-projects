@@ -9,4 +9,5 @@ def print_error(msg, end = ""):
     print(colored(msg, color = 'black', on_color='on_red'), end=end)
 def print_grey(msg, end = ""):
     print(colored(msg, color = 'white', on_color='on_grey'), end=end)
-    
+def print_success_plain(msg, end = ""):
+    print(colored(msg, color = 'green', attrs=['bold']), end=end)
