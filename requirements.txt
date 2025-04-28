@@ -1,2 +1,2 @@
-termcolor==3.0.1
 pandas==2.2.3
+termcolor==3.0.1
