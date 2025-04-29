@@ -6,6 +6,8 @@ aaah... too much to write down! I'm putting all projects together because I'm la
 
 ***
 # Project list
+## Folder 0: older projects (0_older_projects)
+This section works on older pytopia projects.
 **1. Wordle:**
 guess a five-letter word in limited number of guesses.
 Source of words: https://www.kaggle.com/datasets/rtatman/english-word-frequency?resource=download
@@ -20,3 +22,7 @@ Create a simple search engine based on a series of files fed into the project.
 
 **4. Guess Number:**
 Guess a random number by providing up to 10 guesses between 1 to 10.
+
+## Level 1 projects
+pytopia.ai suggests three levels of python projects. Level 1 is the simplest form of projects. Each of these projects contain their own description outlined in README.md in their own folder.
+Level 1 projects focused on simple usage of python and does not rely on external projects as often as it does in Levels 2 and 3.
