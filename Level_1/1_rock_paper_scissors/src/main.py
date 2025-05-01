@@ -3,14 +3,15 @@ from utils import print_error, print_grey, print_success, print_warning, print_s
 
 
 class RockPaperScissors:
-    def __init__(self, name):
+    """Main class for rock-paper-scissors game."""
+    def __init__(self, name = 'user'):
         self.choices = ['rock', 'paper', 'scissors']
-        self.player_name = name
+        self.name: str = name
 
     # player's choice
     def get_player_choice(self):
         print('---------------------')
-        user_choice = input(f"Enter your choice ({' | '.join(self.choices)}):\n")
+        user_choice: str = input(f"Enter your choice ({' | '.join(self.choices)}):\n")
         user_choice = user_choice.lower()
         if user_choice in self.choices:
             return(user_choice)
@@ -22,7 +23,7 @@ class RockPaperScissors:
         return random.choice(self.choices)
 
     # Decide winner
-    def decide_winner(self, user_choice, computer_choice):
+    def decide_winner(self, user_choice: str, computer_choice: str) -> None:
         if user_choice == computer_choice:
             return(print_warning("It's a tie!"))
 
@@ -34,6 +35,11 @@ class RockPaperScissors:
         return(print_error("Oh no! You lost :( Better luck next time."))
 
     def play(self):
+        """Play the game:
+        1. Get player's choice
+        2. Get computer's choice
+        3. Decide winner and print result.
+        """
         user_choice = self.get_player_choice() 
         computer_choice = self.get_computer_choice()
         print(f'Computer choice: {computer_choice}')
@@ -41,7 +47,7 @@ class RockPaperScissors:
 
 
 if __name__ == '__main__':
-    game = RockPaperScissors('user')
+    game = RockPaperScissors()
 
     while True:
         game.play()
