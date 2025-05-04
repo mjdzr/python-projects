@@ -38,12 +38,14 @@ class RandomPasswordGenerator(PasswordGenerator):
 
 
 class MemorablePasswordGenerator(PasswordGenerator):
-    def __init__(self, num_of_words: int = 4, sep: str = '-', capitalize: bool = False, min_word_size: int = 3):
+    def __init__(self, num_of_words: int = 4, sep: str = '-', capitalize: bool = False, 
+                 min_word_size: int = 3, max_word_size: int = 4):
         self.num_of_words = num_of_words
         self.separator = sep
         self.capitalize = capitalize
         self.vocabulary_list = nltk.corpus.words.words()
-        self.vocabulary_list = [word for word in self.vocabulary_list if len(word) >= min_word_size]
+        self.vocabulary_list = [word for wogitrd in self.vocabulary_list if 
+                                min_word_size <= len(word) <= max_word_size]
 
 
     def generate(self):
@@ -55,5 +57,5 @@ class MemorablePasswordGenerator(PasswordGenerator):
 
 
 if __name__ == '__main__':
-    p_obj = MemorablePasswordGenerator()
+    p_obj = MemorablePasswordGenerator(max_word_size=4)
     print(p_obj.generate())
