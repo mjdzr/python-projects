@@ -3,6 +3,13 @@ import random
 
 # Define the montyhall function with switch and stay options
 def monty_hall(switch_doors: bool) -> bool:
+    """Simulate one round of the Monty Hall problem.
+
+    :param switch_doors: If True, the player switches their initial choice of door.
+    :type switch_doors: bool
+    :return: True if the player wins the car, False otherwise.
+    :rtype: bool
+    """
     # Define and shuffle doors
     doors = ['car'] + ['goat'] * 2
     random.shuffle(doors)
