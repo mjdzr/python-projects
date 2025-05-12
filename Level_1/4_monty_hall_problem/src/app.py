@@ -2,7 +2,7 @@ import time
 
 import streamlit as st
 
-from src.monty_hall import simulate_game
+from monty_hall import simulate_game
 
 # Title and banner
 st.set_page_config(layout="centered")
