@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+
 class ContactBook:
 
     # Initialize empty book
@@ -7,7 +8,7 @@ class ContactBook:
         self.contacts = defaultdict(dict)
 
     # Add contact
-    def add_contact(self, name, phone, email=None):
+    def add_contact(self, name: str, phone: str, email: str = None):
         if name in self.contacts:
             print("Name already registered")
             return
@@ -31,7 +32,7 @@ class ContactBook:
             print("*" * 50)
 
     # Delete contact
-    def remove_contact(self, name):
+    def remove_contact(self, name: str):
 
         # Don't do anything if the name isn't in contact
         if name not in self.contacts:
@@ -42,12 +43,18 @@ class ContactBook:
         print("Contact deleted successfully.")
 
     # Update contact
-    def update_contact(self, name, phone=None, email=None):
+    def update_contact(self, name: str, phone: str = None, email: str = None):
         if name in self.contacts:
             if phone:
-                self.contacts[name]['phone'] = phone
+                if phone == 'delete':
+                    self.contacts[name]['phone'] = ''
+                else:
+                    self.contacts[name]['phone'] = phone
             if email:
-                self.contacts[name]['email'] = email
+                if email == 'delete':
+                    self.contacts[name]['email'] = ''
+                else:
+                    self.contacts[name]['email'] = email
 
             print("Contact updated successfully.")
             return
@@ -60,7 +67,6 @@ if __name__ == "__main__":
 
 while True:
     print('Welcome to contact book! Choose an option:')
-    print('-------------------------------------')
     # Get input from user from 1 to 5 to perform actions:
     print('1. Add contact')
     print('2. View contacts')
