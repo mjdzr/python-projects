@@ -1,0 +1,3 @@
+pytube==15.0.0
+tqdm==4.66.1
+pytubefix==6.16.1
