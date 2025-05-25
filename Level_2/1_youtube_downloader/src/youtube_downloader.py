@@ -3,16 +3,34 @@ from pathlib import Path
 
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
+from pytubefix.exceptions import VideoUnavailable
 
 
 class YouTubeDownloader:
-    def __init__(self, url, output_path=None, quality=None):
+    """
+    Initialize a YouTubeDownloader instance.
+
+    :param url: The URL of the YouTube video to download.
+    :type url: str
+    :param output_path: Directory path to save the downloaded video. Defaults to the current working directory.
+    :type output_path: str, optional
+    :param quality: Desired video resolution (e.g., '720p', '1080p'). If unavailable or not provided, the highest available resolution is used.
+    :type quality: str, optional
+    """
+    def __init__(self, url: str, output_path: str = None, quality: str = None):
         self.url = url
         self.output_path = output_path if output_path else Path.cwd()
         self.yt = YouTube(self.url,
                           on_progress_callback=on_progress,
                           on_complete_callback=self.on_complete)
+        # Check availability
+        try:
+            self.yt.check_availability()
+        except VideoUnavailable:
+            print(f'Video is not available. Please check {repr(self.url)} in your browser to make sure the link exists.')
+            exit(1)
         self.resolutions = [stream.resolution for stream in self.yt.streams.filter(progressive=True)]
+        self.quality = quality
 
         # Set quality to the highest available if not specified
         if quality not in self.resolutions and quality is not None:
