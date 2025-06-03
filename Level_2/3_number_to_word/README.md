@@ -1,0 +1,2 @@
+# Number to Words Converter
+This is a simple Python script that converts numbers into their English word representation. It can handle up to 12 digits. This project is simply created to practice recursive functions and string manipulation in Python.
