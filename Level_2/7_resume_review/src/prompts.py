@@ -3,8 +3,6 @@ RESUME_JSON_SCHEMA = """
   "personal_info": {
     "full_name": "",
     "address": {
-      "street": "",
-      "city": "",
       "state": "",
       "zip": "",
       "country": ""
@@ -207,4 +205,42 @@ Parse the above CV and output the structured data strictly according to the sche
 Leave values blank or use empty strings/arrays if data is missing from the CV.
 
 Note: Ensure the YAML is valid and well-formed.
+"""
+
+REVIEW_OUTPUT_SCHEMA = """
+section_name_1:
+  impact_level: string
+  revised_content: string | list | dict
+  revision_suggestion: list[string]
+section_name_2:
+  impact_level: string
+  revised_content: string | list | dict
+  revision_suggestion: list[string]
+...
+"""
+
+RESUME_REVIEW_PROMPT = """
+**Task:** You are an expert resume reviewer. Your job is to analyze the provided resume data in YAML format and suggest improvements for each section. For each suggestion, you should provide an impact score (Low, Medium, High) and the revised version.
+
+**YAML Input Data:** {resume_data}
+
+**Instructions:**
+
+1. Read the provided YAML resume data carefully.
+2. For each section, evaluate the content and suggest improvements.
+3. For each suggestion, include:
+   - An impact score (Low, Medium, High).
+   - The revised version of the text.
+   - Suggestion on how to improve the section.
+
+**YAML Output Schema:**
+
+```yaml
+{review_output_schema}
+```
+
+**Output Requirement:**
+
+- Please provide the output strictly in the above YAML format, without any additional explanations or text.
+- Make sure to add double quotes around the values that are strings. This is important for the YAML parser.
 """
