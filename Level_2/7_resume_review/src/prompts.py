@@ -244,3 +244,31 @@ RESUME_REVIEW_PROMPT = """
 - Please provide the output strictly in the above YAML format, without any additional explanations or text.
 - Make sure to add double quotes around the values that are strings. This is important for the YAML parser.
 """
+
+JOB_DESCRIPTION_REVIEW_PROMPT = """
+**Task:** You are an expert resume reviewer. Your job is to analyze the provided resume data in YAML format against the provided job description. Suggest improvements for each section of the resume to better align with the job description. For each suggestion, you should provide an impact score (Low, Medium, High), the revised version of the text, and a list of suggestions on how to improve the section.
+
+**YAML Input Data:** {resume_data}
+
+**Job Description:** {job_description}
+
+**Instructions:**
+
+1. Read the provided YAML resume data and the job description carefully.
+2. For each section of the resume, evaluate the content in the context of the job description and suggest improvements.
+3. For each suggestion, include:
+   - An impact score (Low, Medium, High).
+   - The revised version of the text.
+   - A list of suggestions on how to improve the section.
+
+**YAML Output Schema:**
+
+```yaml
+{review_output_schema}
+```
+
+**Output Requirement:**
+
+- Please provide the output strictly in the above YAML format, without any additional explanations or text.
+- Make sure to add double quotes around the values that are strings. This is important for the YAML parser.
+"""
