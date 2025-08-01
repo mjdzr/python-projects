@@ -41,9 +41,21 @@ st.title("Resume Reviewer and Editor")
 
 with st.sidebar:
     st.header("Upload")
-    uploaded_pdf = st.file_uploader("Upload your resume (PDF)", type=["pdf"])
-    uploaded_jd = st.file_uploader("Optionally upload a job description (TXT)", type=["txt"])
+    uploaded_pdf = st.file_uploader("Upload your resume (PDF)", type=["pdf"], key="pdf_upload")
+    uploaded_jd = st.file_uploader("Optionally upload a job description (TXT)", type=["txt"], key="jd_upload")
     submit_btn = st.button("Analyze Resume")
+
+# Initialize session state keys
+if "parsed_resume" not in st.session_state:
+    st.session_state.parsed_resume = None
+if "review_dict" not in st.session_state:
+    st.session_state.review_dict = None
+if "all_sections" not in st.session_state:
+    st.session_state.all_sections = []
+if "response_yaml" not in st.session_state:
+    st.session_state.response_yaml = ""
+if "review_response" not in st.session_state:
+    st.session_state.review_response = ""
 
 if submit_btn:
     if uploaded_pdf is None:
@@ -53,9 +65,15 @@ if submit_btn:
             resume_text = extract_from_pdf(uploaded_pdf)
         
         with st.spinner("Parsing resume using LLM..."):
-            prompt_yaml = LLM_YAML_PARSE_PROMPT.format(resume_text=resume_text, resume_schema=RESUME_YAML_SCHEMA)
+            prompt_yaml = LLM_YAML_PARSE_PROMPT.format(
+                resume_text=resume_text, 
+                resume_schema=RESUME_YAML_SCHEMA
+            )
             response_yaml = call_llm(prompt_yaml)
             parsed_resume = parse_yaml(response_yaml)
+            st.session_state.response_yaml = response_yaml  # Store string form if you want to display elsewhere
+            st.session_state.parsed_resume = parsed_resume
+            st.session_state.all_sections = list(parsed_resume.keys())
         
         if uploaded_jd is not None:
             job_description = uploaded_jd.read().decode("utf-8")
@@ -68,22 +86,32 @@ if submit_btn:
                 review_output_schema=REVIEW_OUTPUT_SCHEMA)
             review_response = call_llm(review_prompt)
             review_dict = parse_yaml(review_response)
+            st.session_state.review_dict = review_dict
+            st.session_state.review_response = review_response
 
         st.success("Analysis complete!")
-        
-        # Section navigation
-        all_sections = list(parsed_resume.keys())
-        section = st.selectbox("Choose section to review:", all_sections, index=0)
 
-        left, right = st.columns(2)
-        with left:
-            st.markdown(f"### Original: {section}")
-            st.code(yaml.dump({section: parsed_resume.get(section, None)}, sort_keys=False), language="yaml")
-        with right:
-            st.markdown(f"### Suggestions / Fixes: {section}")
-            if review_dict and section in review_dict and review_dict[section]:
-                st.code(yaml.dump({section: review_dict[section]}, sort_keys=False), language="yaml")
-            else:
-                st.info("No fixes or suggestions for this section.")
+# Show section navigation and comparison only if data exists
+if st.session_state.parsed_resume is not None:
+    section = st.selectbox(
+        "Choose section to review:",
+        st.session_state.all_sections,
+        index=0
+    )
+
+    left, right = st.columns(2)
+    with left:
+        st.markdown(f"### Original: {section}")
+        st.code(
+            yaml.dump({section: st.session_state.parsed_resume.get(section, None)}, sort_keys=False),
+            language="yaml"
+        )
+    with right:
+        st.markdown(f"### Suggestions / Fixes: {section}")
+        review_dict = st.session_state.review_dict
+        if review_dict and section in review_dict and review_dict[section]:
+            st.code(yaml.dump({section: review_dict[section]}, sort_keys=False), language="yaml")
+        else:
+            st.info("No fixes or suggestions for this section.")
 
 st.info("Navigate sections using the dropdown to see the original and LLM-suggested fixes. Upload a job description for even more targeted feedback!")
