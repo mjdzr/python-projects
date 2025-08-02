@@ -21,14 +21,9 @@ def extract_from_pdf(uploaded_file):
     return resume_text
 
 def clean_yaml_code_block(yaml_str):
-    """
-    Removes markdown code fences from LLM output.
-    """
     lines = yaml_str.strip().splitlines()
-    # Remove leading code fence if present
     if lines and lines[0].strip().startswith("```"):
         lines = lines[1:]
-    # Remove trailing code fence if present
     if lines and lines[-1].strip().startswith("```"):
         lines = lines[:-1]
     return "\n".join(lines)
@@ -52,10 +47,8 @@ if "review_dict" not in st.session_state:
     st.session_state.review_dict = None
 if "all_sections" not in st.session_state:
     st.session_state.all_sections = []
-if "response_yaml" not in st.session_state:
-    st.session_state.response_yaml = ""
-if "review_response" not in st.session_state:
-    st.session_state.review_response = ""
+if "section_index" not in st.session_state:
+    st.session_state.section_index = 0
 
 if submit_btn:
     if uploaded_pdf is None:
@@ -71,9 +64,9 @@ if submit_btn:
             )
             response_yaml = call_llm(prompt_yaml)
             parsed_resume = parse_yaml(response_yaml)
-            st.session_state.response_yaml = response_yaml  # Store string form if you want to display elsewhere
             st.session_state.parsed_resume = parsed_resume
             st.session_state.all_sections = list(parsed_resume.keys())
+            st.session_state.section_index = 0  # reset navigation index
         
         if uploaded_jd is not None:
             job_description = uploaded_jd.read().decode("utf-8")
@@ -87,18 +80,29 @@ if submit_btn:
             review_response = call_llm(review_prompt)
             review_dict = parse_yaml(review_response)
             st.session_state.review_dict = review_dict
-            st.session_state.review_response = review_response
 
         st.success("Analysis complete!")
 
 # Show section navigation and comparison only if data exists
-if st.session_state.parsed_resume is not None:
-    section = st.selectbox(
-        "Choose section to review:",
-        st.session_state.all_sections,
-        index=0
-    )
+if st.session_state.parsed_resume is not None and st.session_state.all_sections:
+    idx = st.session_state.section_index
+    all_sections = st.session_state.all_sections
 
+    # Navigation row
+    col1, col2, col3 = st.columns([1,2,1])
+    with col1:
+        if st.button("Previous", disabled=idx == 0):
+            if st.session_state.section_index > 0:
+                st.session_state.section_index -= 1
+                st.rerun()
+    with col3:
+        if st.button("Next", disabled=idx == len(all_sections) - 1):
+            if st.session_state.section_index < len(all_sections) - 1:
+                st.session_state.section_index += 1
+                st.rerun()
+
+    # Section display
+    section = all_sections[idx]
     left, right = st.columns(2)
     with left:
         st.markdown(f"### Original: {section}")
@@ -114,4 +118,6 @@ if st.session_state.parsed_resume is not None:
         else:
             st.info("No fixes or suggestions for this section.")
 
-st.info("Navigate sections using the dropdown to see the original and LLM-suggested fixes. Upload a job description for even more targeted feedback!")
+    st.write(f"**Section {idx+1} of {len(all_sections)}**")
+
+st.info("Use the Previous and Next buttons to navigate through your CV sections and see original vs. LLM-suggested fixes.")
