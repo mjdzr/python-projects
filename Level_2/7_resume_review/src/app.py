@@ -1,15 +1,12 @@
 import streamlit as st
 import yaml
+from streamlit_extras.stylable_container import stylable_container
 
-from llm_interface import call_llm
-from prompts import (
-    RESUME_YAML_SCHEMA,
-    LLM_YAML_PARSE_PROMPT,
-    RESUME_REVIEW_PROMPT,
-    REVIEW_OUTPUT_SCHEMA,
-    JOB_DESCRIPTION_REVIEW_PROMPT
-)
 from constants import EXAMPLE_JOB_DESCRIPTION
+from llm_interface import call_llm
+from prompts import (JOB_DESCRIPTION_REVIEW_PROMPT, LLM_YAML_PARSE_PROMPT,
+                     RESUME_REVIEW_PROMPT, RESUME_YAML_SCHEMA,
+                     REVIEW_OUTPUT_SCHEMA)
 from utils import extract_from_pdf, parse_yaml
 
 st.set_page_config(page_title="Resume Reviewer", layout="wide")
@@ -55,9 +52,18 @@ if submit_btn:
             job_description = EXAMPLE_JOB_DESCRIPTION
 
         with st.spinner("Reviewing your resume..."):
-            review_prompt = RESUME_REVIEW_PROMPT.format(
-                resume_data=response_yaml, 
-                review_output_schema=REVIEW_OUTPUT_SCHEMA)
+            # If job description is uploaded, use 
+            if uploaded_jd is not None:
+                review_prompt = JOB_DESCRIPTION_REVIEW_PROMPT.format(
+                    resume_data=response_yaml,
+                    job_description=job_description,
+                    review_output_schema=REVIEW_OUTPUT_SCHEMA
+                )
+            else:
+                review_prompt = RESUME_REVIEW_PROMPT.format(
+                    resume_data=response_yaml,
+                    review_output_schema=REVIEW_OUTPUT_SCHEMA
+                )
             review_response = call_llm(review_prompt)
             review_dict = parse_yaml(review_response)
             st.session_state.review_dict = review_dict
@@ -70,17 +76,33 @@ if st.session_state.parsed_resume is not None and st.session_state.all_sections:
     all_sections = st.session_state.all_sections
 
     # Navigation row
-    col1, col2, col3 = st.columns([1,2,1])
+    col1, col2, col3 = st.columns([2,1,2])
     with col1:
-        if st.button("Previous", disabled=idx == 0):
+        if st.button("← Previous", disabled=idx == 0):
             if st.session_state.section_index > 0:
                 st.session_state.section_index -= 1
                 st.rerun()
+
+    with col2:
+        st.markdown(
+            f"<div style='text-align: center; font-size: 1.2em;'>Section {idx+1} of {len(all_sections)}</div>",
+            unsafe_allow_html=True
+        )
+
     with col3:
-        if st.button("Next", disabled=idx == len(all_sections) - 1):
-            if st.session_state.section_index < len(all_sections) - 1:
-                st.session_state.section_index += 1
-                st.rerun()
+        with stylable_container(
+            key="right_aligned_button_container",
+            css_styles="""
+                button {
+                    float: right;
+                }
+            """
+        ):
+            if st.button("Next →", disabled=idx == len(all_sections) - 1):
+                if st.session_state.section_index < len(all_sections) - 1:
+                    st.session_state.section_index += 1
+                    st.rerun()
+
 
     # Section display
     section = all_sections[idx]
