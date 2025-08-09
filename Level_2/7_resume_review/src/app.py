@@ -105,7 +105,24 @@ if st.session_state.parsed_resume is not None and st.session_state.all_sections:
 
 
     # Section display
+    # Add a section on top of everything that shows the impact level 
     section = all_sections[idx]
+
+    # Access the impact level for the current section from the review_dict
+    impact_level = None
+    review_dict = st.session_state.review_dict
+    if review_dict and section in review_dict and review_dict[section]:
+        impact_level = review_dict[section].get('impact_level', 'No Impact Level')
+
+    # Display the impact level
+    if impact_level:
+        if impact_level == "Low":
+            st.info(f"Impact Level: {impact_level}")
+        elif impact_level == "Medium":
+            st.warning(f"Impact Level: {impact_level}")
+        elif impact_level == "High":
+            st.error(f"Impact Level: {impact_level}")
+
     left, right = st.columns(2)
     with left:
         st.markdown(f"### Original: {section}")
