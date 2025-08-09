@@ -14,7 +14,6 @@ st.markdown("<h1 style='text-align: center; color: darkgreen;'>Resume Reviewer a
 
 st.title("1. Upload file(s)")
 with st.expander("File Upload", expanded=True):
-    st.header("Upload")
     uploaded_pdf = st.file_uploader("Upload your resume (PDF)", type=["pdf"], key="pdf_upload")
     uploaded_jd = st.file_uploader("Optionally upload a job description (TXT)", type=["txt"], key="jd_upload")
     submit_btn = st.button("Analyze Resume")

@@ -10,7 +10,7 @@ load_dotenv(find_dotenv())
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 @cache
-def call_llm(prompt, model = "gpt-5"):
+def call_llm(prompt, model = "gpt-4.1"):
     response = client.chat.completions.create(
         model=model,
         messages=[
