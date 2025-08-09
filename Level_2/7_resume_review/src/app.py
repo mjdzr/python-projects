@@ -10,14 +10,16 @@ from prompts import (JOB_DESCRIPTION_REVIEW_PROMPT, LLM_YAML_PARSE_PROMPT,
 from utils import extract_from_pdf, parse_yaml
 
 st.set_page_config(page_title="Resume Reviewer", layout="wide")
-st.title("Resume Reviewer and Editor")
+st.markdown("<h1 style='text-align: center; color: darkgreen;'>Resume Reviewer and Editor</h1>", unsafe_allow_html=True)
 
-with st.sidebar:
+st.title("1. Upload file(s)")
+with st.expander("File Upload", expanded=True):
     st.header("Upload")
     uploaded_pdf = st.file_uploader("Upload your resume (PDF)", type=["pdf"], key="pdf_upload")
     uploaded_jd = st.file_uploader("Optionally upload a job description (TXT)", type=["txt"], key="jd_upload")
     submit_btn = st.button("Analyze Resume")
 
+st.title("2. Resume Analysis Results")
 # Initialize session state keys
 if "parsed_resume" not in st.session_state:
     st.session_state.parsed_resume = None
