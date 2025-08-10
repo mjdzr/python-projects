@@ -1,3 +1,5 @@
+import re
+
 import streamlit as st
 import yaml
 from streamlit_extras.stylable_container import stylable_container
@@ -126,13 +128,13 @@ if st.session_state.parsed_resume is not None and st.session_state.all_sections:
 
     left, right = st.columns(2)
     with left:
-        st.markdown(f"### Original: {section}")
+        st.info(re.sub(r'[^A-Za-z/:]+', ' ', f"### Original: {section}").title())
         st.code(
             yaml.dump({section: st.session_state.parsed_resume.get(section, None)}, sort_keys=False),
             language="yaml"
         )
     with right:
-        st.markdown(f"### Suggestions / Fixes: {section}")
+        st.success(re.sub(r'[^A-Za-z/:]+', ' ', f"### Suggestions / Fixes: {section}").title())
         review_dict = st.session_state.review_dict
         if review_dict and section in review_dict and review_dict[section]:
             st.code(yaml.dump({section: review_dict[section]}, sort_keys=False), language="yaml")
