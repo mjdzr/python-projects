@@ -4,16 +4,17 @@ import streamlit as st
 import yaml
 from streamlit_extras.stylable_container import stylable_container
 
-from llm_interface import call_llm
+from utils.llm import call_llm
 from prompts import (JOB_DESCRIPTION_REVIEW_PROMPT, LLM_YAML_PARSE_PROMPT,
                      RESUME_REVIEW_PROMPT, RESUME_YAML_SCHEMA,
                      REVIEW_OUTPUT_SCHEMA)
-from utils import extract_from_pdf, parse_yaml
+from utils.pdf import extract_from_pdf
+from utils.yaml import parse_yaml
 
 st.set_page_config(page_title="Resume Reviewer", layout="wide")
 st.markdown("<h1 style='text-align: center; color: darkgreen;'>Resume Reviewer and Editor</h1>", unsafe_allow_html=True)
 
-st.title("1. Upload file(s)")
+st.markdown("1. Upload file(s)")
 with st.expander("File Upload", expanded=True):
     uploaded_pdf = st.file_uploader("Upload your resume (PDF)", type=["pdf"], key="pdf_upload")
     uploaded_jd = st.file_uploader("Optionally upload a job description (TXT)", type=["txt"], key="jd_upload")
