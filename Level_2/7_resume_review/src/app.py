@@ -14,13 +14,13 @@ from utils.yaml import parse_yaml
 st.set_page_config(page_title="Resume Reviewer", layout="wide")
 st.markdown("<h1 style='text-align: center; color: darkgreen;'>Resume Reviewer and Editor</h1>", unsafe_allow_html=True)
 
-st.markdown("1. Upload file(s)")
+st.markdown("### 1. Upload file(s)")
 with st.expander("File Upload", expanded=True):
     uploaded_pdf = st.file_uploader("Upload your resume (PDF)", type=["pdf"], key="pdf_upload")
     uploaded_jd = st.file_uploader("Optionally upload a job description (TXT)", type=["txt"], key="jd_upload")
     submit_btn = st.button("Analyze Resume")
 
-st.title("2. Resume Analysis Results")
+st.markdown("### 2. Resume Analysis Results")
 # Initialize session state keys
 if "parsed_resume" not in st.session_state:
     st.session_state.parsed_resume = None
@@ -37,7 +37,7 @@ if submit_btn:
     else:
         with st.spinner("Extracting text from PDF..."):
             resume_text = extract_from_pdf(uploaded_pdf)
-        
+
         with st.spinner("Parsing resume using LLM..."):
             prompt_yaml = LLM_YAML_PARSE_PROMPT.format(
                 resume_text=resume_text, 
