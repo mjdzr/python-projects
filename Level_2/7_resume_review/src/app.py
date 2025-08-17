@@ -4,7 +4,6 @@ import streamlit as st
 import yaml
 from streamlit_extras.stylable_container import stylable_container
 
-from constants import EXAMPLE_JOB_DESCRIPTION
 from llm_interface import call_llm
 from prompts import (JOB_DESCRIPTION_REVIEW_PROMPT, LLM_YAML_PARSE_PROMPT,
                      RESUME_REVIEW_PROMPT, RESUME_YAML_SCHEMA,
@@ -48,15 +47,11 @@ if submit_btn:
             st.session_state.parsed_resume = parsed_resume
             st.session_state.all_sections = list(parsed_resume.keys())
             st.session_state.section_index = 0  # reset navigation index
-        
-        if uploaded_jd is not None:
-            job_description = uploaded_jd.read().decode("utf-8")
-        else:
-            job_description = EXAMPLE_JOB_DESCRIPTION
 
         with st.spinner("Reviewing your resume..."):
             # If job description is uploaded, use 
             if uploaded_jd is not None:
+                job_description = uploaded_jd.read().decode("utf-8")
                 review_prompt = JOB_DESCRIPTION_REVIEW_PROMPT.format(
                     resume_data=response_yaml,
                     job_description=job_description,
