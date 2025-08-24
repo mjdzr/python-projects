@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 from deep_translator import GoogleTranslator
 
-ADMINS_USERNAMES = ["mjdzr"]
+ADMINS_USERNAMES = ["mjDzr"]
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -19,10 +19,14 @@ def send_welcome(message):
     bot.reply_to(message, "Welcome to the bot! I'm Maj!")
 
 # Reply to message using the message itself ONLY if the message is a reply
-@bot.message_handler(func=lambda message: message.reply_to_message)
+@bot.message_handler(func=lambda message: (
+    message.reply_to_message and
+    'translate' in message.text.lower() and
+    message.from_user.username.lower() in [admin.lower() for admin in ADMINS_USERNAMES]
+))
 def echo_all(message):
     translated_text = GoogleTranslator(source='auto', target='en').translate(message.reply_to_message.text)
-    output = f"Translation: {translated_text}\n"
+    output = f"Replied to message: {message.reply_to_message.text}\n\n<b>Translation</b>: {translated_text}\n"
     bot.reply_to(message, output)
 
 bot.infinity_polling()
