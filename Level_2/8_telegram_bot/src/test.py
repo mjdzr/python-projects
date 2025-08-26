@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from deep_translator import GoogleTranslator
 
 ADMINS_USERNAMES = ["mjDzr"]
+GROUPS = ["mj_python_test"]
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -18,11 +19,12 @@ bot = telebot.TeleBot(bot_token, parse_mode="HTML")
 def send_welcome(message):
     bot.reply_to(message, "Welcome to the bot! I'm Maj!")
 
-# Reply to message using the message itself ONLY if the message is a reply
+# Reply to message using the message itself ONLY if the message is a reply and the group that the bot is in is only in GROUPS
 @bot.message_handler(func=lambda message: (
     message.reply_to_message is not None and
     'translate' in message.text.lower() and
-    message.from_user.username.lower() in [admin.lower() for admin in ADMINS_USERNAMES]
+    message.from_user.username.lower() in [admin.lower() for admin in ADMINS_USERNAMES] and
+    message.chat.username in [group.lower() for group in GROUPS]
 ))
 def echo_all(message):
     translated_text = GoogleTranslator(source='auto', target='en').translate(message.reply_to_message.text)
