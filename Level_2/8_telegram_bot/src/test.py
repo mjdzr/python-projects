@@ -20,7 +20,7 @@ def send_welcome(message):
 
 # Reply to message using the message itself ONLY if the message is a reply
 @bot.message_handler(func=lambda message: (
-    message.reply_to_message and
+    message.reply_to_message is not None and
     'translate' in message.text.lower() and
     message.from_user.username.lower() in [admin.lower() for admin in ADMINS_USERNAMES]
 ))
