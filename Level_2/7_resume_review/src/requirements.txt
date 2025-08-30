@@ -1,6 +1,0 @@
-openai==1.102.0
-PyPDF2==3.0.1
-python-dotenv==1.1.1
-streamlit==1.44.1
-streamlit_extras==0.7.7
-PyYAML==6.0.2
