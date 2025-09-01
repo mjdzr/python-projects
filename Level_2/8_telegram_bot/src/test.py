@@ -8,17 +8,13 @@ ADMINS_USERNAMES = ["mjDzr"]
 GROUPS = ["mj_python_test"]
 
 def load_config():
-    """Load environment variables from a .env file."""
     load_dotenv()
     return os.getenv("TELEGRAM_BOT_TOKEN")
 
 def create_bot(bot_token):
-    """Create and return a TeleBot instance."""
     return telebot.TeleBot(bot_token, parse_mode="HTML")
 
 def setup_handlers(bot):
-    """Setup command and message handlers for the bot."""
-
     @bot.message_handler(commands=["start", "help"])
     def send_welcome(message):
         bot.reply_to(message, "Welcome to the bot! I'm Maj!")
