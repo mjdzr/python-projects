@@ -1,34 +1,52 @@
 import os
-
-import telebot
 from dotenv import load_dotenv
-
+import telebot
 from deep_translator import GoogleTranslator
 
+# Constants
 ADMINS_USERNAMES = ["mjDzr"]
 GROUPS = ["mj_python_test"]
 
-# Load environment variables from a .env file
-load_dotenv()
+def load_config():
+    """Load environment variables from a .env file."""
+    load_dotenv()
+    return os.getenv("TELEGRAM_BOT_TOKEN")
 
-bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
-bot = telebot.TeleBot(bot_token, parse_mode="HTML")
+def create_bot(bot_token):
+    """Create and return a TeleBot instance."""
+    return telebot.TeleBot(bot_token, parse_mode="HTML")
 
-# Start/help reply
-@bot.message_handler(commands=["start", "help"])
-def send_welcome(message):
-    bot.reply_to(message, "Welcome to the bot! I'm Maj!")
+def setup_handlers(bot):
+    """Setup command and message handlers for the bot."""
 
-# Reply to message using the message itself ONLY if the message is a reply and the group that the bot is in is only in GROUPS
-@bot.message_handler(func=lambda message: (
-    message.reply_to_message is not None and
-    'translate' in message.text.lower() and
-    message.from_user.username.lower() in [admin.lower() for admin in ADMINS_USERNAMES] and
-    message.chat.username in [group.lower() for group in GROUPS]
-))
-def echo_all(message):
+    @bot.message_handler(commands=["start", "help"])
+    def send_welcome(message):
+        bot.reply_to(message, "Welcome to the bot! I'm Maj!")
+
+    @bot.message_handler(func=should_translate_message)
+    def echo_all(message):
+        handle_translation(message, bot)
+
+def should_translate_message(message):
+    """Determine if a message should be translated and replied to."""
+    return (
+        message.reply_to_message is not None and
+        'translate' in message.text.lower() and
+        message.from_user.username.lower() in [admin.lower() for admin in ADMINS_USERNAMES] and
+        message.chat.username in [group.lower() for group in GROUPS]
+    )
+
+def handle_translation(message, bot):
+    """Translate the replied-to message and reply with the translation."""
     translated_text = GoogleTranslator(source='auto', target='en').translate(message.reply_to_message.text)
     output = f"Replied to message: {message.reply_to_message.text}\n\n<b>Translation</b>: {translated_text}\n"
     bot.reply_to(message, output)
 
-bot.infinity_polling()
+def main():
+    bot_token = load_config()
+    bot = create_bot(bot_token)
+    setup_handlers(bot)
+    bot.infinity_polling()
+
+if __name__ == "__main__":
+    main()
