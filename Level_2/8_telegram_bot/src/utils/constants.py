@@ -1,0 +1,1 @@
+WELCOME_MESSAGE = "Welcome to the bot! I'm MJ!"

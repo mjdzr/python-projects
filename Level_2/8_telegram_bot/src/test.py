@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import telebot
 from deep_translator import GoogleTranslator
+from utils.constants import WELCOME_MESSAGE
 
 # Constants
 ADMINS_USERNAMES = ["mjDzr"]
@@ -16,11 +17,11 @@ def create_bot(bot_token):
 
 def setup_handlers(bot):
     @bot.message_handler(commands=["start", "help"])
-    def send_welcome(message):
-        bot.reply_to(message, "Welcome to the bot! I'm Maj!")
+    def start_help(message):
+        bot.reply_to(message, WELCOME_MESSAGE)
 
     @bot.message_handler(func=should_translate_message)
-    def echo_all(message):
+    def echo_translation(message):
         handle_translation(message, bot)
 
 def should_translate_message(message):
