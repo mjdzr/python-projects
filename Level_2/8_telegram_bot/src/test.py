@@ -2,11 +2,7 @@ import os
 from dotenv import load_dotenv
 import telebot
 from deep_translator import GoogleTranslator
-from utils.constants import WELCOME_MESSAGE
-
-# Constants
-ADMINS_USERNAMES = ["mjDzr"]
-GROUPS = ["mj_python_test"]
+from utils.constants import WELCOME_MESSAGE, ADMINS_USERNAMES, GROUPS
 
 def load_config():
     load_dotenv()
@@ -23,6 +19,15 @@ def setup_handlers(bot):
     @bot.message_handler(func=should_translate_message)
     def echo_translation(message):
         handle_translation(message, bot)
+
+    @bot.message_reaction_handler(func=lambda message: True)
+    def handle_reaction(message: telebot.types.Message):
+        reaction = message.new_reaction[-1].emoji
+        print(reaction)
+        if reaction == "👍":
+            bot.reply_to(message, "You liked this message!")
+        elif reaction == "👎":
+            bot.reply_to(message, "You disliked this message!")
 
 def should_translate_message(message):
     """Determine if a message should be translated and replied to."""
@@ -43,7 +48,10 @@ def main():
     bot_token = load_config()
     bot = create_bot(bot_token)
     setup_handlers(bot)
-    bot.infinity_polling()
+    bot.infinity_polling(
+        allowed_updates=['message', 'message_reaction'],
+        restart_on_change=True
+    )
 
 if __name__ == "__main__":
     main()
