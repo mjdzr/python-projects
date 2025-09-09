@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import telebot
 from deep_translator import GoogleTranslator
-from utils.constants import WELCOME_MESSAGE, ADMINS_USERNAMES, GROUPS
+import utils.constants as constants
 
 def load_config():
     load_dotenv()
@@ -14,7 +14,7 @@ def create_bot(bot_token):
 def setup_handlers(bot):
     @bot.message_handler(commands=["start", "help"])
     def start_help(message):
-        bot.reply_to(message, WELCOME_MESSAGE)
+        bot.reply_to(message, constants.WELCOME_MESSAGE)
 
     @bot.message_handler(func=should_translate_message)
     def echo_translation(message):
@@ -34,8 +34,8 @@ def should_translate_message(message):
     return (
         message.reply_to_message is not None and
         'translate' in message.text.lower() and
-        message.from_user.username.lower() in [admin.lower() for admin in ADMINS_USERNAMES] and
-        message.chat.username in [group.lower() for group in GROUPS]
+        message.from_user.username.lower() in [admin.lower() for admin in constants.ADMINS_USERNAMES] and
+        message.chat.username in [group.lower() for group in constants.GROUPS]
     )
 
 def handle_translation(message, bot):
@@ -54,4 +54,5 @@ def main():
     )
 
 if __name__ == "__main__":
+    print(constants.BOT_RUNNING_MESSAGE)
     main()
