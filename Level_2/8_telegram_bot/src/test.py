@@ -20,10 +20,8 @@ def setup_handlers(bot):
     def echo_translation(message):
         handle_translation(message, bot)
 
-    @bot.message_reaction_handler(func=lambda message: True)
+    @bot.message_reaction_handler(func=lambda message: message.reaction)
     def handle_reaction(message: telebot.types.Message):
-        if not message.reaction:
-            return
         reaction = message.new_reaction[-1].emoji
         print(reaction)
         if reaction == "👍":
