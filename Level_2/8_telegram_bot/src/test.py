@@ -22,6 +22,8 @@ def setup_handlers(bot):
 
     @bot.message_reaction_handler(func=lambda message: True)
     def handle_reaction(message: telebot.types.Message):
+        if not message.reaction:
+            return
         reaction = message.new_reaction[-1].emoji
         print(reaction)
         if reaction == "👍":
