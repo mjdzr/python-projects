@@ -7,6 +7,7 @@ from openai import OpenAI
 # Find and load the .env file
 load_dotenv(find_dotenv())
 
+assert os.getenv("OPENAI_API_KEY"), "OPENAI_API_KEY not found"
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 @cache
