@@ -29,7 +29,7 @@ def setup_handlers(bot):
         handle_translation(message, bot)
 
     # for handling reactions
-    @bot.message_reaction_handler(func=lambda message: message.new_reaction)
+    @bot.message_reaction_handler(func=lambda message: message.new_reaction and is_valid_reaction_user(message))
     def handle_reaction(message: telebot.types.Message):
         reaction = message.new_reaction[-1].emoji
         print(reaction)
@@ -38,11 +38,20 @@ def setup_handlers(bot):
         elif reaction == "👎":
             bot.reply_to(message, "You disliked this message!")
 
+def is_group_valid(message):
+    """Determine if a message is from a valid group."""
+    return message.chat.username.lower() in [group.lower() for group in constants.GROUPS]
+
+def is_valid_reaction_user(message):
+    """Determine if a user is valid for reacting to a message."""
+    return message.user.username.lower() in [admin.lower() for admin in constants.ADMINS_USERNAMES] and \
+        is_group_valid(message)
+
 def is_valid_reply(message):
     """Determine if a an admin has replied to a message."""
     my_logic = message.reply_to_message is not None and \
             message.from_user.username.lower() in [admin.lower() for admin in constants.ADMINS_USERNAMES] and \
-                message.chat.username.lower() in [group.lower() for group in constants.GROUPS]
+                is_group_valid(message)
     return my_logic
 
 def should_translate_message(message):
