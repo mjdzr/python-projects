@@ -13,9 +13,10 @@ def create_bot(bot_token):
 
 def setup_handlers(bot):
     # for adding to database
-    @bot.message_handler(func=lambda message: True)
-    def store_message(message):
-        pass
+    # @bot.message_handler(func=lambda message: True)
+    # def store_message(message):
+    #     pass
+    #     # TODO: store messages to database
 
     # for getting help
     @bot.message_handler(commands=["start", "help"])
@@ -23,12 +24,12 @@ def setup_handlers(bot):
         bot.reply_to(message, constants.WELCOME_MESSAGE)
 
     # for translation
-    @bot.message_handler(func=lambda message: should_translate_message and is_valid_admin_reply)
+    @bot.message_handler(func=lambda message: should_translate_message(message))
     def echo_translation(message):
         handle_translation(message, bot)
 
     # for handling reactions
-    @bot.message_reaction_handler(func=lambda message: message.new_reaction and is_valid_admin_reply)
+    @bot.message_reaction_handler(func=lambda message: message.new_reaction)
     def handle_reaction(message: telebot.types.Message):
         reaction = message.new_reaction[-1].emoji
         print(reaction)
@@ -37,16 +38,15 @@ def setup_handlers(bot):
         elif reaction == "👎":
             bot.reply_to(message, "You disliked this message!")
 
-def is_valid_admin_reply(message):
-    """Determine if a message should be translated and replied to."""
-    return (
-        message.reply_to_message is not None and
-        message.from_user.username.lower() in [admin.lower() for admin in constants.ADMINS_USERNAMES] and
-        message.chat.username in [group.lower() for group in constants.GROUPS]
-    )
+def is_valid_reply(message):
+    """Determine if a an admin has replied to a message."""
+    my_logic = message.reply_to_message is not None and \
+            message.from_user.username.lower() in [admin.lower() for admin in constants.ADMINS_USERNAMES] and \
+                message.chat.username.lower() in [group.lower() for group in constants.GROUPS]
+    return my_logic
 
 def should_translate_message(message):
-    return ('translate' in message.text.lower() and is_valid_admin_reply(message))
+    return ('translate' in message.text.lower() and is_valid_reply(message))
 
 def handle_translation(message, bot):
     """Translate the replied-to message and reply with the translation."""
