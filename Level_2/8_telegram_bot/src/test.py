@@ -12,15 +12,23 @@ def create_bot(bot_token):
     return telebot.TeleBot(bot_token, parse_mode="HTML")
 
 def setup_handlers(bot):
+    # for adding to database
+    @bot.message_handler(func=lambda message: True)
+    def store_message(message):
+        pass
+
+    # for getting help
     @bot.message_handler(commands=["start", "help"])
     def start_help(message):
         bot.reply_to(message, constants.WELCOME_MESSAGE)
 
-    @bot.message_handler(func=should_translate_message)
+    # for translation
+    @bot.message_handler(func=lambda message: should_translate_message and is_valid_admin_reply)
     def echo_translation(message):
         handle_translation(message, bot)
 
-    @bot.message_reaction_handler(func=lambda message: message.new_reaction)
+    # for handling reactions
+    @bot.message_reaction_handler(func=lambda message: message.new_reaction and is_valid_admin_reply)
     def handle_reaction(message: telebot.types.Message):
         reaction = message.new_reaction[-1].emoji
         print(reaction)
@@ -29,14 +37,16 @@ def setup_handlers(bot):
         elif reaction == "👎":
             bot.reply_to(message, "You disliked this message!")
 
-def should_translate_message(message):
+def is_valid_admin_reply(message):
     """Determine if a message should be translated and replied to."""
     return (
         message.reply_to_message is not None and
-        'translate' in message.text.lower() and
         message.from_user.username.lower() in [admin.lower() for admin in constants.ADMINS_USERNAMES] and
         message.chat.username in [group.lower() for group in constants.GROUPS]
     )
+
+def should_translate_message(message):
+    return ('translate' in message.text.lower() and is_valid_admin_reply(message))
 
 def handle_translation(message, bot):
     """Translate the replied-to message and reply with the translation."""
