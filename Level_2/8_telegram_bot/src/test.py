@@ -43,12 +43,12 @@ def is_group_valid(message):
     return message.chat.username.lower() in [group.lower() for group in constants.GROUPS]
 
 def is_valid_reaction_user(message):
-    """Determine if a user is valid for reacting to a message."""
+    """Determine if an admin is reacting to the message."""
     return message.user.username.lower() in [admin.lower() for admin in constants.ADMINS_USERNAMES] and \
         is_group_valid(message)
 
 def is_valid_reply(message):
-    """Determine if a an admin has replied to a message."""
+    """Determine if an admin has replied to a message."""
     my_logic = message.reply_to_message is not None and \
             message.from_user.username.lower() in [admin.lower() for admin in constants.ADMINS_USERNAMES] and \
                 is_group_valid(message)
