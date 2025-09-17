@@ -1,12 +1,18 @@
 import os
-from dotenv import load_dotenv
+
 import telebot
 from deep_translator import GoogleTranslator
+from dotenv import load_dotenv
+
 import utils.constants as constants
+from utils.db import DBHandler
+
 
 def load_config():
     load_dotenv()
     return os.getenv("TELEGRAM_BOT_TOKEN")
+
+db_handler = DBHandler()
 
 def create_bot(bot_token):
     return telebot.TeleBot(bot_token, parse_mode="HTML")
@@ -27,6 +33,13 @@ def setup_handlers(bot):
     @bot.message_handler(func=lambda message: should_translate_message(message))
     def echo_translation(message):
         handle_translation(message, bot)
+
+    # database for storing messages
+    @bot.message_handler(func=lambda message: True)
+    def store_message(message):
+        json_data = message.json
+        db_handler.store_messages(json_data)
+        print(json_data)
 
     # for handling reactions
     @bot.message_reaction_handler(func=lambda message: message.new_reaction and is_valid_reaction_user(message))
