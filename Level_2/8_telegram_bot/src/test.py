@@ -39,17 +39,18 @@ def setup_handlers(bot):
     def store_message(message):
         json_data = message.json
         db_handler.store_messages(json_data)
-        print(json_data)
 
     # for handling reactions
     @bot.message_reaction_handler(func=lambda message: message.new_reaction and is_valid_reaction_user(message))
     def handle_reaction(message: telebot.types.Message):
         reaction = message.new_reaction[-1].emoji
         print(reaction)
-        if reaction == "👍":
-            bot.reply_to(message, "You liked this message!")
-        elif reaction == "👎":
-            bot.reply_to(message, "You disliked this message!")
+        if reaction not in ["👍"]:
+            return
+        message_text_db = db_handler.get_message(message.message_id)
+        if message_text_db:
+            message_text = message_text_db.get('text')
+            bot.reply_to(message, f'reaction to message: {message_text}')
 
 def is_group_valid(message):
     """Determine if a message is from a valid group."""
@@ -82,7 +83,7 @@ def main():
     setup_handlers(bot)
     bot.infinity_polling(
         allowed_updates=['message', 'message_reaction'],
-        restart_on_change=True
+        #restart_on_change=True
     )
 
 if __name__ == "__main__":
