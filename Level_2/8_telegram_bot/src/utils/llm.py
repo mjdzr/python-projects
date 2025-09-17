@@ -11,7 +11,7 @@ assert os.getenv("OPENAI_API_KEY"), "OPENAI_API_KEY not found"
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 @cache
-def call_llm(prompt, model = "omni-moderation-latest"):
+def call_llm(prompt, model = "gpt-4.1-nano"):
     response = client.chat.completions.create(
         model=model,
         messages=[

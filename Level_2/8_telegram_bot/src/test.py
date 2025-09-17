@@ -3,6 +3,7 @@ import os
 import telebot
 from deep_translator import GoogleTranslator
 from dotenv import load_dotenv
+from utils.llm import call_llm
 
 import utils.constants as constants
 from utils.db import DBHandler
@@ -50,7 +51,9 @@ def setup_handlers(bot):
         message_text_db = db_handler.get_message(message.message_id)
         if message_text_db:
             message_text = message_text_db.get('text')
-            bot.reply_to(message, f'reaction to message: {message_text}')
+            reply = bot.reply_to(message, constants.PROCESSING_MESSAGE)
+            response = call_llm(message_text)
+            bot.edit_message_text(chat_id=reply.chat.id, message_id=reply.id, text=response)
 
 def is_group_valid(message):
     """Determine if a message is from a valid group."""
