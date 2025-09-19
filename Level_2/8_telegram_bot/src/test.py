@@ -16,7 +16,7 @@ def load_config():
 db_handler = DBHandler()
 
 def create_bot(bot_token):
-    return telebot.TeleBot(bot_token, parse_mode="HTML")
+    return telebot.TeleBot(bot_token, parse_mode="markdown")
 
 def setup_handlers(bot):
     # for adding to database
