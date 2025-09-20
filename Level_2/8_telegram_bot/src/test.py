@@ -9,9 +9,7 @@ import utils.constants as constants
 from utils.db import DBHandler
 
 
-def load_config():
-    load_dotenv()
-    return os.getenv("TELEGRAM_BOT_TOKEN")
+
 
 db_handler = DBHandler()
 
@@ -57,11 +55,11 @@ def setup_handlers(bot):
 
 def is_group_valid(message):
     """Determine if a message is from a valid group."""
-    return message.chat.username.lower() in [group.lower() for group in constants.GROUPS]
+    return message.chat.username.lower() in [group.lower() for group in os.getenv("GROUPS").split(",")]
 
 def is_valid_reaction_user(message):
     """Determine if an admin is reacting to the message."""
-    return message.user.username.lower() in [admin.lower() for admin in constants.ADMINS_USERNAMES] and \
+    return message.user.username.lower() in [admin.lower() for admin in os.getenv("ADMINS_USERNAMES").split(",")] and \
         is_group_valid(message)
 
 def is_valid_reply(message):
@@ -81,7 +79,7 @@ def handle_translation(message, bot):
     bot.reply_to(message, output)
 
 def main():
-    bot_token = load_config()
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
     bot = create_bot(bot_token)
     setup_handlers(bot)
     bot.infinity_polling(
