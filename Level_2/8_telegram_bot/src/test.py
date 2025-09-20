@@ -3,13 +3,12 @@ import os
 import telebot
 from deep_translator import GoogleTranslator
 from dotenv import load_dotenv
-from utils.llm import call_llm
 
 import utils.constants as constants
 from utils.db import DBHandler
+from utils.llm import call_llm
 
-
-
+load_dotenv()
 
 db_handler = DBHandler()
 
