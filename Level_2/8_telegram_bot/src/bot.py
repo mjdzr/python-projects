@@ -10,6 +10,9 @@ from utils.llm import call_llm
 
 load_dotenv()
 
+GROUPS = [group.strip().lower() for group in os.getenv("GROUPS").split(",")]
+ADMINS_USERNAMES = [admin.strip().lower() for admin in os.getenv("ADMINS_USERNAMES").split(",")]
+
 db_handler = DBHandler()
 
 def create_bot(bot_token):
@@ -54,17 +57,17 @@ def setup_handlers(bot):
 
 def is_group_valid(message):
     """Determine if a message is from a valid group."""
-    return message.chat.username.lower() in [group.lower() for group in os.getenv("GROUPS").split(",")]
+    return message.chat.username.lower() in GROUPS
 
 def is_valid_reaction_user(message):
     """Determine if an admin is reacting to the message."""
-    return message.user.username.lower() in [admin.lower() for admin in os.getenv("ADMINS_USERNAMES").split(",")] and \
+    return message.user.username.lower() in ADMINS_USERNAMES and \
         is_group_valid(message)
 
 def is_valid_reply(message):
     """Determine if an admin has replied to a message."""
     my_logic = message.reply_to_message is not None and \
-            message.from_user.username.lower() in [admin.lower() for admin in constants.ADMINS_USERNAMES] and \
+            message.from_user.username.lower() in ADMINS_USERNAMES and \
                 is_group_valid(message)
     return my_logic
 
@@ -74,8 +77,8 @@ def should_translate_message(message):
 def handle_translation(message, bot):
     """Translate the replied-to message and reply with the translation."""
     translated_text = GoogleTranslator(source='auto', target='en').translate(message.reply_to_message.text)
-    output = f"Replied to message: {message.reply_to_message.text}\n\n<b>Translation</b>: {translated_text}\n"
-    bot.reply_to(message, output)
+    output = f"Replied to message: {message.reply_to_message.text}\n\n**Translation**: {translated_text}\n"
+    bot.reply_to(message, output, parse_mode="MarkdownV2")
 
 def main():
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
